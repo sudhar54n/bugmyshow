@@ -63,7 +63,11 @@ export default function MovieDetail() {
   useEffect(() => {
     if (movie && selectedSeats.length > 0) {
       const basePrice = selectedSeats.reduce((total, seat) => {
-        const multiplier = seat.type === 'vip' ? 1.5 : seat.type === 'premium' ? 1.2 : 1;
+        let multiplier = 1;
+        if (seat.type === 'vip') multiplier = 1.5; // First Class
+        else if (seat.type === 'premium') multiplier = 1.2; // Premium
+        else if (seat.row === 'K') multiplier = 0.7; // Second Class
+        else multiplier = 1; // Regular
         return total + (movie.price * multiplier);
       }, 0);
       setTotalPrice(basePrice);
@@ -74,35 +78,70 @@ export default function MovieDetail() {
 
   const generateCinemaSeats = () => {
     const seats: Seat[] = [];
-    const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-    const seatsPerRow = 12;
     
-    rows.forEach((row, rowIndex) => {
-      for (let seatNum = 1; seatNum <= seatsPerRow; seatNum++) {
-        let seatType: 'regular' | 'premium' | 'vip' = 'regular';
-        
-        // VIP seats (front rows)
-        if (rowIndex <= 2) {
-          seatType = 'vip';
-        }
-        // Premium seats (middle rows)
-        else if (rowIndex <= 5) {
-          seatType = 'premium';
-        }
-        
-        // Randomly occupy some seats for demo
-        const isOccupied = Math.random() < 0.3;
-        
+    // First Class section (2 rows, 13 seats each)
+    const firstClassRows = ['A', 'B'];
+    firstClassRows.forEach((row, rowIndex) => {
+      for (let seatNum = 1; seatNum <= 13; seatNum++) {
+        const isOccupied = Math.random() < 0.2; // Less occupied in first class
         seats.push({
           id: `${row}${seatNum}`,
           row,
           number: seatNum,
           isOccupied,
           isSelected: false,
-          type: seatType
+          type: 'vip'
         });
       }
     });
+    
+    // Premium section (6 rows, 13 seats each with center aisle)
+    const premiumRows = ['C', 'D', 'E', 'F', 'G', 'H'];
+    premiumRows.forEach((row, rowIndex) => {
+      for (let seatNum = 1; seatNum <= 13; seatNum++) {
+        const isOccupied = Math.random() < 0.3;
+        seats.push({
+          id: `${row}${seatNum}`,
+          row,
+          number: seatNum,
+          isOccupied,
+          isSelected: false,
+          type: 'premium'
+        });
+      }
+    });
+    
+    // Regular section (2 rows, 13 seats each)
+    const regularRows = ['I', 'J'];
+    regularRows.forEach((row, rowIndex) => {
+      for (let seatNum = 1; seatNum <= 13; seatNum++) {
+        const isOccupied = Math.random() < 0.4; // More occupied in regular
+        seats.push({
+          id: `${row}${seatNum}`,
+          row,
+          number: seatNum,
+          isOccupied,
+          isSelected: false,
+          type: 'regular'
+        });
+      }
+    });
+    
+    // Second Class section (1 row, 9 seats - center seats only)
+    const secondClassRow = 'K';
+    for (let seatNum = 3; seatNum <= 11; seatNum++) {
+      if (seatNum >= 5 && seatNum <= 9) { // Only center seats
+        const isOccupied = Math.random() < 0.5;
+        seats.push({
+          id: `${secondClassRow}${seatNum}`,
+          row: secondClassRow,
+          number: seatNum,
+          isOccupied,
+          isSelected: false,
+          type: 'regular'
+        });
+      }
+    }
     
     setCinemaSeats(seats);
   };
@@ -127,12 +166,12 @@ export default function MovieDetail() {
 
   const getSeatColor = (seat: Seat) => {
     if (seat.isOccupied) return 'bg-red-600 cursor-not-allowed';
-    if (seat.isSelected) return 'bg-green-500 border-green-300';
+    if (seat.isSelected) return 'bg-green-500 border-2 border-green-300 shadow-lg shadow-green-500/50';
     
     switch (seat.type) {
-      case 'vip': return 'bg-yellow-600 hover:bg-yellow-500 border-yellow-400';
-      case 'premium': return 'bg-blue-600 hover:bg-blue-500 border-blue-400';
-      default: return 'bg-gray-600 hover:bg-gray-500 border-gray-400';
+      case 'vip': return 'bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 border border-yellow-400 shadow-md';
+      case 'premium': return 'bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 border border-blue-400 shadow-md';
+      default: return 'bg-gradient-to-br from-gray-500 to-gray-600 hover:from-gray-400 hover:to-gray-500 border border-gray-400 shadow-md';
     }
   };
 
@@ -376,82 +415,243 @@ export default function MovieDetail() {
 
           {/* Cinema Hall Seat Selection */}
           <div className="xl:col-span-1">
-            <div className="bg-gray-900 border border-green-400 rounded-lg p-6 sticky top-4">
-              <h2 className="text-xl font-bold text-green-400 mb-4 flex items-center space-x-2">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-green-400 rounded-xl p-6 sticky top-4 shadow-2xl">
+              <h2 className="text-2xl font-bold text-green-400 mb-6 flex items-center space-x-2">
                 <Monitor className="h-5 w-5" />
                 <span>Select Seats</span>
               </h2>
               
               {/* Screen */}
-              <div className="mb-6">
-                <div className="bg-gradient-to-r from-green-600 to-green-400 h-2 rounded-full mb-2"></div>
-                <p className="text-center text-green-400 text-sm font-semibold">SCREEN</p>
+              <div className="mb-8">
+                <div className="relative">
+                  <div className="bg-gradient-to-r from-transparent via-blue-400 to-transparent h-16 rounded-t-full mb-3 opacity-60 shadow-lg shadow-blue-400/30"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent h-1 top-6 rounded-full opacity-40"></div>
+                </div>
+                <p className="text-center text-blue-300 text-sm font-semibold mb-2">All eyes this way please</p>
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent mb-4"></div>
               </div>
 
-              {/* Seat Map */}
-              <div className="mb-6">
-                <div className="grid grid-cols-12 gap-1 text-xs">
-                  {cinemaSeats.map((seat) => (
-                    <button
-                      key={seat.id}
-                      onClick={() => toggleSeatSelection(seat.id)}
-                      disabled={seat.isOccupied}
-                      className={`
-                        w-6 h-6 rounded-t-lg border text-xs font-bold transition-all duration-200
-                        ${getSeatColor(seat)}
-                        ${seat.isSelected ? 'transform scale-110' : ''}
-                      `}
-                      title={`${seat.id} - ${seat.type} ${seat.isOccupied ? '(Occupied)' : ''}`}
-                    >
-                      {seat.number}
-                    </button>
-                  ))}
+              {/* First Class Section */}
+              <div className="mb-8">
+                <div className="text-center mb-4">
+                  <h3 className="text-lg font-bold text-yellow-400 mb-1">₹{(movie.price * 1.5).toFixed(0)} FIRST CLASS</h3>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-50"></div>
                 </div>
-                
-                {/* Row Labels */}
-                <div className="grid grid-cols-12 gap-1 mt-1">
-                  {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].map((row, index) => (
-                    <div key={row} className="text-center text-green-400 text-xs font-bold">
-                      {index === 0 && row}
+                <div className="space-y-2">
+                  {['A', 'B'].map(row => (
+                    <div key={row} className="flex justify-center gap-1">
+                      {cinemaSeats
+                        .filter(seat => seat.row === row)
+                        .map((seat) => (
+                          <button
+                            key={seat.id}
+                            onClick={() => toggleSeatSelection(seat.id)}
+                            disabled={seat.isOccupied}
+                            className={`
+                              w-8 h-8 rounded-lg text-xs font-bold transition-all duration-300 transform hover:scale-110
+                              ${getSeatColor(seat)}
+                              ${seat.isSelected ? 'scale-110 ring-2 ring-green-400' : ''}
+                            `}
+                            title={`${seat.id} - First Class ${seat.isOccupied ? '(Occupied)' : ''}`}
+                          >
+                            {seat.number}
+                          </button>
+                        ))}
                     </div>
                   ))}
                 </div>
               </div>
 
+              {/* Premium Section */}
+              <div className="mb-8">
+                <div className="space-y-2">
+                  {['C', 'D', 'E', 'F', 'G', 'H'].map(row => (
+                    <div key={row} className="flex justify-center gap-1">
+                      {/* Left side seats */}
+                      <div className="flex gap-1">
+                        {cinemaSeats
+                          .filter(seat => seat.row === row && seat.number <= 6)
+                          .map((seat) => (
+                            <button
+                              key={seat.id}
+                              onClick={() => toggleSeatSelection(seat.id)}
+                              disabled={seat.isOccupied}
+                              className={`
+                                w-7 h-7 rounded-lg text-xs font-bold transition-all duration-300 transform hover:scale-110
+                                ${getSeatColor(seat)}
+                                ${seat.isSelected ? 'scale-110 ring-2 ring-green-400' : ''}
+                              `}
+                              title={`${seat.id} - Premium ${seat.isOccupied ? '(Occupied)' : ''}`}
+                            >
+                              {seat.number}
+                            </button>
+                          ))}
+                      </div>
+                      
+                      {/* Center aisle */}
+                      <div className="w-4"></div>
+                      
+                      {/* Right side seats */}
+                      <div className="flex gap-1">
+                        {cinemaSeats
+                          .filter(seat => seat.row === row && seat.number > 6)
+                          .map((seat) => (
+                            <button
+                              key={seat.id}
+                              onClick={() => toggleSeatSelection(seat.id)}
+                              disabled={seat.isOccupied}
+                              className={`
+                                w-7 h-7 rounded-lg text-xs font-bold transition-all duration-300 transform hover:scale-110
+                                ${getSeatColor(seat)}
+                                ${seat.isSelected ? 'scale-110 ring-2 ring-green-400' : ''}
+                              `}
+                              title={`${seat.id} - Premium ${seat.isOccupied ? '(Occupied)' : ''}`}
+                            >
+                              {seat.number}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Regular Section */}
+              <div className="mb-8">
+                <div className="space-y-2">
+                  {['I', 'J'].map(row => (
+                    <div key={row} className="flex justify-center gap-1">
+                      {/* Left side seats */}
+                      <div className="flex gap-1">
+                        {cinemaSeats
+                          .filter(seat => seat.row === row && seat.number <= 6)
+                          .map((seat) => (
+                            <button
+                              key={seat.id}
+                              onClick={() => toggleSeatSelection(seat.id)}
+                              disabled={seat.isOccupied}
+                              className={`
+                                w-7 h-7 rounded-lg text-xs font-bold transition-all duration-300 transform hover:scale-110
+                                ${getSeatColor(seat)}
+                                ${seat.isSelected ? 'scale-110 ring-2 ring-green-400' : ''}
+                              `}
+                              title={`${seat.id} - Regular ${seat.isOccupied ? '(Occupied)' : ''}`}
+                            >
+                              {seat.number}
+                            </button>
+                          ))}
+                      </div>
+                      
+                      {/* Center aisle */}
+                      <div className="w-4"></div>
+                      
+                      {/* Right side seats */}
+                      <div className="flex gap-1">
+                        {cinemaSeats
+                          .filter(seat => seat.row === row && seat.number > 6)
+                          .map((seat) => (
+                            <button
+                              key={seat.id}
+                              onClick={() => toggleSeatSelection(seat.id)}
+                              disabled={seat.isOccupied}
+                              className={`
+                                w-7 h-7 rounded-lg text-xs font-bold transition-all duration-300 transform hover:scale-110
+                                ${getSeatColor(seat)}
+                                ${seat.isSelected ? 'scale-110 ring-2 ring-green-400' : ''}
+                              `}
+                              title={`${seat.id} - Regular ${seat.isOccupied ? '(Occupied)' : ''}`}
+                            >
+                              {seat.number}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Second Class Section */}
+              <div className="mb-6">
+                <div className="text-center mb-4">
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent mb-2"></div>
+                  <h3 className="text-lg font-bold text-gray-400 mb-1">₹{(movie.price * 0.7).toFixed(0)} SECOND CLASS</h3>
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-400 to-transparent opacity-50"></div>
+                </div>
+                <div className="flex justify-center gap-1">
+                  {cinemaSeats
+                    .filter(seat => seat.row === 'K')
+                    .map((seat) => (
+                      <button
+                        key={seat.id}
+                        onClick={() => toggleSeatSelection(seat.id)}
+                        disabled={seat.isOccupied}
+                        className={`
+                          w-7 h-7 rounded-lg text-xs font-bold transition-all duration-300 transform hover:scale-110
+                          ${getSeatColor(seat)}
+                          ${seat.isSelected ? 'scale-110 ring-2 ring-green-400' : ''}
+                        `}
+                        title={`${seat.id} - Second Class ${seat.isOccupied ? '(Occupied)' : ''}`}
+                      >
+                        {seat.number}
+                      </button>
+                    ))}
+                </div>
+              </div>
+
               {/* Legend */}
-              <div className="mb-6 space-y-2">
-                <div className="flex items-center space-x-2 text-xs">
-                  <div className="w-4 h-4 bg-gray-600 rounded-t border border-gray-400"></div>
-                  <span className="text-gray-300">Regular (${movie.price})</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs">
-                  <div className="w-4 h-4 bg-blue-600 rounded-t border border-blue-400"></div>
-                  <span className="text-gray-300">Premium (+20%)</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs">
-                  <div className="w-4 h-4 bg-yellow-600 rounded-t border border-yellow-400"></div>
-                  <span className="text-gray-300">VIP (+50%)</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs">
-                  <div className="w-4 h-4 bg-red-600 rounded-t"></div>
-                  <span className="text-gray-300">Occupied</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs">
-                  <div className="w-4 h-4 bg-green-500 rounded-t border border-green-300"></div>
-                  <span className="text-gray-300">Selected</span>
+              <div className="mb-6 space-y-3 bg-black/30 rounded-lg p-4">
+                <h4 className="text-sm font-bold text-green-400 mb-3">Seat Legend</h4>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded border border-yellow-400"></div>
+                    <span className="text-gray-300">First Class (+50%)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded border border-blue-400"></div>
+                    <span className="text-gray-300">Premium (+20%)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-gradient-to-br from-gray-500 to-gray-600 rounded border border-gray-400"></div>
+                    <span className="text-gray-300">Regular</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-red-600 rounded"></div>
+                    <span className="text-gray-300">Occupied</span>
+                  </div>
+                  <div className="flex items-center space-x-2 col-span-2">
+                    <div className="w-4 h-4 bg-green-500 rounded border-2 border-green-300"></div>
+                    <span className="text-gray-300">Selected</span>
+                  </div>
                 </div>
               </div>
 
               {/* Selected Seats Info */}
               {selectedSeats.length > 0 && (
-                <div className="mb-4 p-3 bg-black border border-green-400 rounded">
-                  <h4 className="text-green-400 font-semibold mb-2">Selected Seats:</h4>
-                  <div className="flex flex-wrap gap-1">
+                <div className="mb-6 p-4 bg-gradient-to-r from-green-900/30 to-green-800/30 border border-green-400 rounded-lg">
+                  <h4 className="text-green-400 font-semibold mb-3 flex items-center space-x-2">
+                    <Ticket className="h-4 w-4" />
+                    <span>Selected Seats</span>
+                  </h4>
+                  <div className="grid grid-cols-4 gap-2">
                     {selectedSeats.map(seat => (
-                      <span key={seat.id} className="bg-green-600 text-black px-2 py-1 rounded text-xs font-semibold">
+                      <div key={seat.id} className="bg-green-600/20 border border-green-500 text-green-400 px-2 py-1 rounded text-xs font-semibold text-center">
                         {seat.id}
-                      </span>
+                      </div>
                     ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-green-400/30">
+                    <div className="text-xs text-gray-400 space-y-1">
+                      {selectedSeats.map(seat => {
+                        const multiplier = seat.type === 'vip' ? 1.5 : seat.type === 'premium' ? 1.2 : seat.type === 'regular' && seat.row === 'K' ? 0.7 : 1;
+                        const seatPrice = movie.price * multiplier;
+                        return (
+                          <div key={seat.id} className="flex justify-between">
+                            <span>{seat.id} ({seat.type === 'vip' ? 'First Class' : seat.type === 'premium' ? 'Premium' : seat.row === 'K' ? 'Second Class' : 'Regular'})</span>
+                            <span>₹{seatPrice.toFixed(2)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               )}

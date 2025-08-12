@@ -7,11 +7,6 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 // ✅ Initialize Supabase client with hardcoded credentials
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-// ✅ Export function to get Supabase client
-export const getSupabase = () => {
-  return supabase;
-};
-
 // ✅ Test database connection
 export const testConnection = async () => {
   try {

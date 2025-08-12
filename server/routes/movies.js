@@ -154,5 +154,3 @@ router.post('/:id/review', async (req, res) => {
     res.status(500).json({ error: 'Failed to add review' });
   }
 });
-
-export { router as movieRouter };

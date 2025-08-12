@@ -20,7 +20,7 @@ app.use('/public', express.static('public'));
 // Routes
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
-import { movieRouter } from './routes/movies.js';
+import movieRoutes from './routes/movies.js';
 import bookingRoutes from './routes/bookings.js';
 import adminRoutes from './routes/admin.js';
 import ticketRoutes from './routes/tickets.js';
@@ -28,7 +28,7 @@ import paymentRoutes from './routes/payment.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/movies', movieRouter);
+app.use('/api/movies', movieRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/tickets', ticketRoutes);

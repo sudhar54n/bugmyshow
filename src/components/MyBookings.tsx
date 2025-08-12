@@ -19,8 +19,6 @@ export default function MyBookings() {
   const [loading, setLoading] = useState(true);
   const [downloadingTicket, setDownloadingTicket] = useState<string | null>(null);
   const [showDownloadOptions, setShowDownloadOptions] = useState<string | null>(null);
-  const [downloadingTicket, setDownloadingTicket] = useState<string | null>(null);
-  const [showDownloadOptions, setShowDownloadOptions] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.user_id) {

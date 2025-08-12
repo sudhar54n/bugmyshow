@@ -88,7 +88,7 @@ export default function Movies() {
                       .replace(/</g, '<')
                       .replace(/>/g, '>')
                       .replace(/"/g, '"')
-                      .replace(/'/g, ''')
+                      .replace(/'/g, '&#x27;')
                       // VULNERABLE: Incomplete filtering - allows complex payloads
                       .replace(/script/gi, 'scr1pt')
                       .replace(/javascript/gi, 'java5cript')

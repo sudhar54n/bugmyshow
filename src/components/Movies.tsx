@@ -79,9 +79,30 @@ export default function Movies() {
           <h1 className="text-5xl font-montserrat font-black text-gradient">
             {/* VULNERABLE: Reflected XSS - searchQuery displayed without sanitization */}
             {searchQuery ? (
-              <span dangerouslySetInnerHTML={{ 
-                __html: `Search Results for "${searchQuery}"` 
-              }}></span>
+              <span>
+                Search Results for "
+                <span 
+                  dangerouslySetInnerHTML={{ 
+                    __html: searchQuery
+                      .replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#x27;')
+                      // VULNERABLE: Incomplete filtering - allows complex payloads
+                      .replace(/script/gi, 'scr1pt')
+                      .replace(/javascript/gi, 'java5cript')
+                      .replace(/on\w+=/gi, 'on_event=')
+                      .replace(/alert/gi, 'al3rt')
+                      .replace(/eval/gi, 'ev4l')
+                      .replace(/document/gi, 'doc_ument')
+                      .replace(/window/gi, 'w1ndow')
+                      .replace(/cookie/gi, 'cook1e')
+                      // But misses many bypass techniques
+                  }}
+                />
+                "
+              </span>
             ) : 'All Movies'}
           </h1>
           

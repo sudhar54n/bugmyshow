@@ -272,14 +272,22 @@ export default function MovieDetail() {
         })
       });
 
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server returned non-JSON response');
+      }
+
       if (response.ok) {
         alert('Review added successfully!');
         setReviewComment('');
         setReviewRating(5);
         fetchMovie(); // Refresh movie data
       } else {
-        const errorData = await response.json();
-        console.error('Review submission failed:', errorData);
+        console.error('Review submission failed:', data);
         alert('Failed to add review. Please try again.');
       }
     } catch (error) {

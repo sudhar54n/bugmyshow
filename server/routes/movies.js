@@ -1,7 +1,7 @@
-// server/routes/movies.js
-const express = require('express');
+import express from 'express';
+import Movie from '../models/Movie.js';
+
 const router = express.Router();
-const Movie = require('../models/Movie'); // Mongoose model
 
 // --- Utility ---------------------------------------------------------------
 
@@ -134,4 +134,4 @@ router.post('/:id/reviews', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

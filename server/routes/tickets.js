@@ -115,6 +115,39 @@ router.get('/generate/:bookingId', auth, async (req, res) => {
 
 // Helper function to generate ticket HTML
 function generateTicketHtml({ booking, user, bookingId, ticketNumber }) {
+  // VULNERABLE: Server-Side Template Injection (SSTI)
+  // Username is directly interpolated without sanitization
+  // Allows template injection like: {{7*7}} or ${process.env}
+  const unsafeUsername = user.username || 'Unknown User';
+  
+  // Simulate basic template processing (vulnerable to SSTI)
+  let processedUsername = unsafeUsername;
+  try {
+    // VULNERABLE: Evaluating user input as template expressions
+    // This allows SSTI attacks like {{constructor.constructor('return process.env')()}}
+    processedUsername = processedUsername.replace(/\{\{(.+?)\}\}/g, (match, expression) => {
+      try {
+        // EXTREMELY VULNERABLE: Direct evaluation of user input
+        return eval(expression);
+      } catch (e) {
+        return match; // Return original if evaluation fails
+      }
+    });
+    
+    // Also vulnerable to ${} template literals
+    processedUsername = processedUsername.replace(/\$\{(.+?)\}/g, (match, expression) => {
+      try {
+        // EXTREMELY VULNERABLE: Direct evaluation of user input
+        return eval(expression);
+      } catch (e) {
+        return match; // Return original if evaluation fails
+      }
+    });
+  } catch (error) {
+    console.error('Template processing error:', error);
+    processedUsername = unsafeUsername;
+  }
+  
   return `
     <div style="width: 400px; margin: 0 auto; font-family: 'Courier New', monospace; background: #000; color: #00ff41; border: 2px solid #00ff41; padding: 20px;">
       <div style="text-align: center; border-bottom: 1px dashed #00ff41; padding-bottom: 15px; margin-bottom: 15px;">
@@ -136,7 +169,7 @@ function generateTicketHtml({ booking, user, bookingId, ticketNumber }) {
         
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
           <span style="color: #00cc33;">CUSTOMER:</span>
-          <span style="color: #00ff41; font-weight: bold;">${user.username}</span>
+          <span style="color: #00ff41; font-weight: bold;">${processedUsername}</span>
         </div>
         
       </div>

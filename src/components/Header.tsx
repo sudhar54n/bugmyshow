@@ -184,7 +184,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden text-green-400 hover:text-green-300 transition-all duration-300 p-2 rounded-lg hover:bg-green-400/10"
+            className="lg:hidden text-green-400 hover:text-green-300 transition-all duration-300 p-2 rounded-lg hover:bg-green-400/10 relative z-10"
           >
             {isMobileMenuOpen ? 
               <X className="h-6 w-6 animate-spin" /> : 

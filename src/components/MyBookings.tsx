@@ -208,7 +208,7 @@ export default function MyBookings() {
                         <DollarSign className="h-4 w-4 text-green-400" />
                         <div>
                           <p className="text-green-400 font-semibold">Total</p>
-                          <p className="text-lg font-bold">₹{booking.total_price}</p>
+                          <p className="text-lg font-bold">₹{booking.total_price || booking.price || 0}</p>
                         </div>
                       </div>
                     </div>

@@ -329,7 +329,7 @@ export default function Profile() {
                     <div className="flex justify-between">
                       <span className="text-gray-400">Total Spent:</span>
                       <span className="text-green-400">
-                        ₹{userBookings.reduce((sum, booking) => sum + booking.total_price, 0).toFixed(2)}
+                      <div className="text-4xl font-montserrat font-black text-gradient mb-2">₹{userBookings.reduce((sum, booking) => sum + (booking.total_price || booking.price || 0), 0).toFixed(2)}</div>
                       </span>
                     </div>
                   </div>
@@ -378,7 +378,7 @@ export default function Profile() {
                         </div>
                         <div className="flex items-center space-x-1 text-gray-400">
                           <DollarSign className="h-4 w-4" />
-                          <span>${booking.total_price}</span>
+                          <span>₹{booking.total_price || booking.price || 0}</span>
                         </div>
                         <div className="text-gray-400">
                           Show: {booking.show_time}

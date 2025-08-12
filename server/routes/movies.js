@@ -1,98 +1,137 @@
-import express from 'express';
-import Movie from '../models/Movie.js';
-import auth from '../middleware/auth.js';
+// server/routes/movies.js
+const express = require('express');
 const router = express.Router();
+const Movie = require('../models/Movie'); // Mongoose model
 
-// Get all movies
+// --- Utility ---------------------------------------------------------------
+
+/**
+ * Normalize any value into an array suitable for `reviews`.
+ * Handles: undefined/null, stringified JSON, wrong types.
+ */
+function normalizeReviews(value) {
+  if (Array.isArray(value)) return value;
+  if (value == null) return [];
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  // If it's some other object/number/etc, reset to empty array.
+  return [];
+}
+
+/**
+ * Basic input sanitizer/formatter for reviews
+ */
+function buildReview({ user, comment, rating }) {
+  return {
+    user: String(user || 'Anonymous'),
+    comment: String(comment || '').trim(),
+    rating: Number.isFinite(Number(rating)) ? Number(rating) : 0,
+    date: new Date()
+  };
+}
+
+// --- Routes ----------------------------------------------------------------
+
+// GET /api/movies
 router.get('/', async (req, res) => {
   try {
-    const movies = await Movie.find();
+    const movies = await Movie.find({});
     res.json(movies);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    console.error('Error listing movies:', err);
+    res.status(500).json({ error: 'Failed to list movies' });
   }
 });
 
-// Reflected XSS - Vulnerability #3
-router.get('/search', async (req, res) => {
-  try {
-    const { q } = req.query;
-    
-    if (!q) {
-      return res.json([]);
-    }
-    
-    const movies = await Movie.find({
-      title: { $regex: q }
-    });
-    
-    // Vulnerable: Reflecting user input without sanitization
-    res.json({
-      query: q, // VULNERABLE: Direct reflection - XSS possible with <script>alert('XSS')</script>
-      results: movies
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// Get single movie
+// GET /api/movies/:id
 router.get('/:id', async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.id);
-    if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
-    }
-    
-    // Ensure reviews is always an array
-    if (typeof movie.reviews === 'string') {
-      try {
-        movie.reviews = JSON.parse(movie.reviews);
-      } catch (e) {
-        movie.reviews = [];
-      }
-    }
-    if (!Array.isArray(movie.reviews)) {
-      movie.reviews = [];
-    }
-    
+    if (!movie) return res.status(404).json({ error: 'Movie not found' });
     res.json(movie);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    console.error('Error fetching movie:', err);
+    res.status(500).json({ error: 'Failed to fetch movie' });
   }
 });
 
-// Stored XSS - Vulnerability #3
-router.post('/:id/review', auth, async (req, res) => {
+// POST /api/movies
+// (Optional create endpoint; keep or remove as your app requires)
+router.post('/', async (req, res) => {
   try {
-    const { comment, rating } = req.body;
-    const movieId = req.params.id;
-    
-    const movie = await Movie.findById(movieId);
-    if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
-    }
-    
-    // Ensure reviews is always an array
-    if (!Array.isArray(movie.reviews)) {
-      movie.reviews = [];
-    }
-    
-    // Vulnerable: No input sanitization - Stored XSS
-    movie.reviews.push({
-      user: req.user.username,
-      comment: comment, // Direct storage without sanitization
-      rating: rating,
-      date: new Date()
-    });
-    
+    const payload = req.body || {};
+    const movie = new Movie(payload);
+    // Ensure reviews is always an array on new docs too
+    movie.reviews = normalizeReviews(movie.reviews);
     await movie.save();
-    
-    res.json({ message: 'Review added successfully' });
-  } catch (error) {
-    console.error('Error adding review:', error);
-    res.status(500).json({ message: error.message });
+    res.status(201).json(movie);
+  } catch (err) {
+    console.error('Error creating movie:', err);
+    res.status(500).json({ error: 'Failed to create movie' });
   }
 });
 
-export default router;
+// PUT /api/movies/:id
+// (Optional update endpoint)
+router.put('/:id', async (req, res) => {
+  try {
+    const payload = { ...req.body };
+    // If caller sends reviews, normalize it so we don't store bad shapes
+    if ('reviews' in payload) payload.reviews = normalizeReviews(payload.reviews);
+
+    const movie = await Movie.findByIdAndUpdate(req.params.id, payload, {
+      new: true,
+      runValidators: true
+    });
+    if (!movie) return res.status(404).json({ error: 'Movie not found' });
+    res.json(movie);
+  } catch (err) {
+    console.error('Error updating movie:', err);
+    res.status(500).json({ error: 'Failed to update movie' });
+  }
+});
+
+// DELETE /api/movies/:id
+// (Optional delete endpoint)
+router.delete('/:id', async (req, res) => {
+  try {
+    const out = await Movie.findByIdAndDelete(req.params.id);
+    if (!out) return res.status(404).json({ error: 'Movie not found' });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error deleting movie:', err);
+    res.status(500).json({ error: 'Failed to delete movie' });
+  }
+});
+
+// POST /api/movies/:id/reviews
+// Adds a review safely even if reviews was null/string/incorrect type.
+router.post('/:id/reviews', async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.id);
+    if (!movie) return res.status(404).json({ error: 'Movie not found' });
+
+    // Normalize reviews BEFORE push (this fixes your crash)
+    movie.reviews = normalizeReviews(movie.reviews);
+
+    const review = buildReview(req.body || {});
+    movie.reviews.push(review);
+
+    await movie.save();
+    res.status(201).json({
+      message: 'Review added',
+      reviews: movie.reviews
+    });
+  } catch (err) {
+    console.error('Error adding review:', err);
+    res.status(500).json({ error: 'Failed to add review' });
+  }
+});
+
+module.exports = router;

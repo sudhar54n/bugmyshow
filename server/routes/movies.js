@@ -73,6 +73,11 @@ router.post('/:id/review', auth, async (req, res) => {
       return res.status(404).json({ message: 'Movie not found' });
     }
     
+    // Ensure reviews is always an array
+    if (!Array.isArray(movie.reviews)) {
+      movie.reviews = [];
+    }
+    
     // Vulnerable: No input sanitization - Stored XSS
     movie.reviews.push({
       user: req.user.username,

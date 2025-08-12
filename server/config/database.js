@@ -12,7 +12,14 @@ export const testConnection = async () => {
   try {
     console.log('📡 Testing Supabase connection...');
 
-    const { data, error } = await supabase.from('users').select('*').limit(1);
+    // Add timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Connection timeout')), 5000);
+    });
+
+    const queryPromise = supabase.from('users').select('*').limit(1);
+    
+    const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
 
     if (error) {
       console.error('❌ Supabase query error:', error.message);
@@ -20,12 +27,11 @@ export const testConnection = async () => {
     }
 
     console.log('✅ Supabase responded successfully:');
-    console.log(data);
+    console.log(`Found ${data?.length || 0} users in database`);
 
     return true;
   } catch (err) {
-    console.error('❌ Caught fetch error in testConnection():');
-    console.error(err);
+    console.error('❌ Database connection failed:', err.message);
     return false;
   }
 };

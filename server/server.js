@@ -68,15 +68,18 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   try {
     console.log('🔍 Testing database connection...');
-    const dbConnected = await testConnection();
-    
-    if (!dbConnected) {
-      console.error('❌ Failed to connect to database.');
-      process.exit(1);
+    try {
+      const dbConnected = await testConnection();
+      if (dbConnected) {
+        await createAdminUser();
+        await createSampleMovies();
+      } else {
+        console.warn('⚠️ Database connection failed, but continuing to start server...');
+      }
+    } catch (dbError) {
+      console.warn('⚠️ Database setup failed:', dbError.message);
+      console.warn('⚠️ Continuing to start server without database setup...');
     }
-    
-    await createAdminUser();
-    await createSampleMovies();
     
     app.listen(preferredPort, () => {
       console.log(`🚀 BugMyShow API Server running on port ${preferredPort}`);

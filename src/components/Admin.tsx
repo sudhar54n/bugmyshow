@@ -182,7 +182,8 @@ export default function Admin() {
 
         {/* Movies Table */}
         <div className="bg-gray-900 border border-red-400 rounded-lg overflow-hidden">
-          <table className="w-full">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-full">
             <thead className="bg-red-600 text-black">
               <tr>
                 <th className="px-4 py-3 text-left">Title</th>
@@ -190,7 +191,7 @@ export default function Admin() {
                 <th className="px-4 py-3 text-left">Duration</th>
                 <th className="px-4 py-3 text-left">Price</th>
                 <th className="px-4 py-3 text-left">Seats</th>
-                <th className="px-4 py-3 text-left">Actions</th>
+                <th className="px-4 py-3 text-left w-24">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -202,25 +203,50 @@ export default function Admin() {
                   <td className="px-4 py-3 text-gray-300">₹{movie.price}</td>
                   <td className="px-4 py-3 text-gray-300">{movie.availableSeats}</td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-3">
                       <button
                         onClick={() => setEditingMovie(movie)}
-                        className="text-blue-400 hover:text-blue-300"
+                        className="text-blue-400 hover:text-blue-300 p-1 hover:bg-blue-400/20 rounded transition-colors"
+                        title="Edit Movie"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-5 w-5" />
                       </button>
                       <button
                         onClick={() => handleDeleteMovie(movie.id)}
-                        className="text-red-400 hover:text-red-300"
+                        className="text-red-400 hover:text-red-300 p-1 hover:bg-red-400/20 rounded transition-colors"
+                        title="Delete Movie"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-5 w-5" />
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
+        </div>
+
+        {/* No Movies Message */}
+        {movies.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <Shield className="h-16 w-16 mx-auto mb-4 opacity-50" />
+              <h3 className="text-xl font-semibold mb-2">No Movies Found</h3>
+              <p>Click "Add Movie" to create your first movie.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Debug Info */}
+        <div className="mt-8 bg-gray-900 border border-yellow-400 rounded-lg p-4">
+          <h3 className="text-yellow-400 font-semibold mb-2">Debug Info</h3>
+          <div className="text-sm text-gray-300 space-y-1">
+            <p>User: {user?.username} (Admin: {user?.isAdmin ? 'Yes' : 'No'})</p>
+            <p>Movies loaded: {movies.length}</p>
+            <p>Add Movie Modal: {showAddMovie ? 'Open' : 'Closed'}</p>
+            <p>Editing Movie: {editingMovie ? editingMovie.title : 'None'}</p>
+          </div>
         </div>
 
         {/* Add Movie Modal */}

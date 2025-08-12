@@ -21,7 +21,8 @@ class Movie {
     if (Array.isArray(reviews)) return reviews;
     if (typeof reviews === 'string') {
       try {
-        return JSON.parse(reviews);
+        const parsed = JSON.parse(reviews);
+        return Array.isArray(parsed) ? parsed : [];
       } catch (error) {
         console.error('Error parsing reviews JSON:', error);
         return [];

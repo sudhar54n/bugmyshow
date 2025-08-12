@@ -1,15 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 🚨 HARDCODED Supabase credentials for local dev (do NOT use in prod)
-const supabaseUrl = 'https://pbzofplqbhpbvgcbxisf.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiem9mcGxxYmhwYnZnY2J4aXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzMDU0NDksImV4cCI6MjA2OTg4MTQ0OX0.ma7tEty4lCIVhJ5nFapyQQ4mE4Grn11jddbXEUOwD4M';
+// Use environment variables for Supabase credentials
+const supabaseUrl = process.env.SUPABASE_URL || 'https://pbzofplqbhpbvgcbxisf.supabase.co';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiem9mcGxxYmhwYnZnY2J4aXNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzMDU0NDksImV4cCI6MjA2OTg4MTQ0OX0.ma7tEty4lCIVhJ5nFapyQQ4mE4Grn11jddbXEUOwD4M';
 
-// ✅ Initialize Supabase client with hardcoded credentials
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// ✅ Initialize Supabase client with environment variables
+export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 // ✅ Test database connection
 export const testConnection = async () => {
   try {
+    if (!supabase) {
+      console.log('⚠️ Supabase client not initialized - missing environment variables');
+      return false;
+    }
+
     console.log('📡 Testing Supabase connection...');
 
     // Add timeout to prevent hanging

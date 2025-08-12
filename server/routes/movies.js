@@ -134,4 +134,4 @@ router.post('/:id/reviews', async (req, res) => {
   }
 });
 
-export default router;
+export { router as movieRouter };

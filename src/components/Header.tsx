@@ -195,7 +195,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 border-t border-green-400/20 animate-fade-in">
+          <div className="lg:hidden mt-4 pb-4 border-t border-green-400/20 animate-fade-in relative z-20">
             <div className="pt-4 space-y-4">
               {/* Mobile Search */}
               <form onSubmit={handleSearch} className="relative group">
@@ -225,7 +225,7 @@ export default function Header() {
                   <>
                     <Link 
                       to="/my-bookings" 
-                      className="flex items-center space-x-2 text-green-400 hover:text-green-300 transition-all duration-300 font-mono font-medium py-3 px-4 rounded-lg hover:bg-green-400/10 border border-transparent hover:border-green-400/30"
+                      className="flex items-center space-x-2 text-green-400 hover:text-green-300 transition-all duration-300 font-mono font-medium py-3 px-4 rounded-lg hover:bg-green-400/10 border border-transparent hover:border-green-400/30 relative z-10"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Ticket className="h-4 w-4" />
@@ -234,7 +234,7 @@ export default function Header() {
                     
                     <Link 
                       to="/profile" 
-                      className="flex items-center space-x-2 text-green-400 hover:text-green-300 transition-all duration-300 font-mono font-medium py-3 px-4 rounded-lg hover:bg-green-400/10 border border-transparent hover:border-green-400/30"
+                      className="flex items-center space-x-2 text-green-400 hover:text-green-300 transition-all duration-300 font-mono font-medium py-3 px-4 rounded-lg hover:bg-green-400/10 border border-transparent hover:border-green-400/30 relative z-10"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <User className="h-4 w-4" />
@@ -244,7 +244,7 @@ export default function Header() {
                     {user.isAdmin && (
                       <Link 
                         to="/admin" 
-                        className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-all duration-300 font-mono font-medium py-3 px-4 rounded-lg hover:bg-red-400/10 border border-transparent hover:border-red-400/30"
+                        className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-all duration-300 font-mono font-medium py-3 px-4 rounded-lg hover:bg-red-400/10 border border-transparent hover:border-red-400/30 relative z-10"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <Shield className="h-4 w-4" />
@@ -257,7 +257,7 @@ export default function Header() {
                         logout();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="bg-transparent border border-green-400 text-green-400 hover:bg-green-400 hover:text-black px-4 py-3 rounded-lg font-mono text-sm transition-all hover:shadow-[0_0_15px_rgba(0,255,65,0.6)] flex items-center space-x-2 justify-center mt-4"
+                      className="bg-transparent border border-green-400 text-green-400 hover:bg-green-400 hover:text-black px-4 py-3 rounded-lg font-mono text-sm transition-all hover:shadow-[0_0_15px_rgba(0,255,65,0.6)] flex items-center space-x-2 justify-center mt-4 relative z-10 w-full"
                     >
                       <LogOut className="h-4 w-4" />
                       <span>exit</span>
@@ -267,14 +267,14 @@ export default function Header() {
                   <div className="flex flex-col space-y-3 mt-4">
                     <Link 
                       to="/login" 
-                      className="bg-transparent border border-green-400 text-green-400 hover:bg-green-400 hover:text-black px-4 py-3 rounded-lg font-mono text-sm transition-all hover:shadow-[0_0_15px_rgba(0,255,65,0.6)] text-center"
+                      className="bg-transparent border border-green-400 text-green-400 hover:bg-green-400 hover:text-black px-4 py-3 rounded-lg font-mono text-sm transition-all hover:shadow-[0_0_15px_rgba(0,255,65,0.6)] text-center relative z-10"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       ./login
                     </Link>
                     <Link 
                       to="/register" 
-                      className="bg-green-400 text-black hover:bg-green-300 px-4 py-3 rounded-lg font-mono text-sm font-bold transition-all hover:shadow-[0_0_15px_rgba(0,255,65,0.8)] text-center"
+                      className="bg-green-400 text-black hover:bg-green-300 px-4 py-3 rounded-lg font-mono text-sm font-bold transition-all hover:shadow-[0_0_15px_rgba(0,255,65,0.8)] text-center relative z-10"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       ./register

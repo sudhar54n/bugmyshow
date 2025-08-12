@@ -22,8 +22,7 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     username: user?.username || '',
-    email: user?.email || '',
-    user_id: user?.user_id || ''
+    email: user?.email || ''
   });
   const [updateMessage, setUpdateMessage] = useState('');
 
@@ -37,8 +36,7 @@ export default function Profile() {
     if (user) {
       setEditForm({
         username: user.username || '',
-        email: user.email || '',
-        user_id: user.user_id?.toString() || ''
+        email: user.email || ''
       });
     }
   }, [user]);
@@ -107,8 +105,7 @@ export default function Profile() {
         },
         body: JSON.stringify({
           username: editForm.username,
-          email: editForm.email,
-          user_id: editForm.user_id
+          email: editForm.email
         })
       });
 
@@ -249,16 +246,6 @@ export default function Profile() {
                         onChange={(e) => setEditForm({...editForm, email: e.target.value})}
                         className="w-full px-3 py-2 bg-black border border-green-400 rounded text-green-400 text-center"
                         placeholder="Email"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <input
-                        type="text"
-                        value={editForm.user_id}
-                        onChange={(e) => setEditForm({...editForm, user_id: e.target.value})}
-                        className="w-full px-3 py-2 bg-black border border-green-400 rounded text-green-400 text-center text-sm"
-                        placeholder="User ID"
                         required
                       />
                     </div>

@@ -272,12 +272,14 @@ export default function MovieDetail() {
         })
       });
 
+      // Read response body as text first to avoid stream consumption issues
+      const responseText = await response.text();
+      
       let data;
       try {
-        data = await response.json();
+        data = JSON.parse(responseText);
       } catch {
-        const text = await response.text();
-        console.error('Non-JSON response:', text);
+        console.error('Non-JSON response:', responseText);
         throw new Error('Server returned non-JSON response');
       }
 

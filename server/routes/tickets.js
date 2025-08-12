@@ -179,9 +179,29 @@ function generateTicketHtml({ booking, user, bookingId, ticketNumber }) {
         <span style="color: #00ff41; font-weight: bold;">${booking.seat_numbers ? booking.seat_numbers.join(', ') : booking.seats + ' SEAT(S)'}</span>
       </div>
       
-      <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
         <span style="color: #00cc33;">TOTAL PRICE:</span>
-        <span style="color: #00ff41; font-weight: bold; font-size: 18px;">₹${booking.total_price}</span>
+        <span style="color: #00ff41; font-weight: bold; font-size: 20px;">₹${booking.total_price || booking.price || 'N/A'}</span>
+      </div>
+      
+      <div style="border: 1px dashed #00ff41; padding: 10px; margin-bottom: 15px; background: rgba(0, 255, 65, 0.1);">
+        <div style="text-align: center;">
+          <div style="color: #00cc33; font-size: 12px; margin-bottom: 5px;">PAYMENT SUMMARY</div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+            <span style="color: #00cc33; font-size: 12px;">Seats (${booking.seats || 1}):</span>
+            <span style="color: #00ff41; font-size: 12px;">₹${booking.total_price || booking.price || 'N/A'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+            <span style="color: #00cc33; font-size: 12px;">Booking Fee:</span>
+            <span style="color: #00ff41; font-size: 12px;">₹0.00</span>
+          </div>
+          <div style="border-top: 1px solid #00cc33; margin: 5px 0; padding-top: 5px;">
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #00ff41; font-weight: bold; font-size: 14px;">TOTAL PAID:</span>
+              <span style="color: #00ff41; font-weight: bold; font-size: 14px;">₹${booking.total_price || booking.price || 'N/A'}</span>
+            </div>
+          </div>
+        </div>
       </div>
       
       <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">

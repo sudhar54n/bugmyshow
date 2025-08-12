@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Terminal, User, LogOut, Shield, Search } from 'lucide-react';
+import { Terminal, User, LogOut, Shield, Search, Ticket } from 'lucide-react';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -44,6 +44,11 @@ export default function Header() {
               
               {user ? (
                 <>
+                  <Link to="/my-bookings" className="flex items-center space-x-1 text-green-400 hover:text-green-300 transition-colors">
+                    <Ticket className="h-4 w-4" />
+                    <span>My Bookings</span>
+                  </Link>
+                  
                   <Link to="/profile" className="flex items-center space-x-1 text-green-400 hover:text-green-300 transition-colors">
                     <User className="h-4 w-4" />
                     <span>{user.username}</span>

@@ -7,6 +7,7 @@ import Register from './components/Register';
 import Movies from './components/Movies';
 import MovieDetail from './components/MovieDetail';
 import Profile from './components/Profile';
+import MyBookings from './components/MyBookings';
 import Admin from './components/Admin';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
@@ -24,6 +25,7 @@ function App() {
               <Route path="/movies" element={<Movies />} />
               <Route path="/movies/:id" element={<MovieDetail />} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
               <Route path="/admin" element={<Admin />} />
             </Routes>
           </div>

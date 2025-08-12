@@ -102,7 +102,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold text-green-400">
-                        ${movie.price}
+                        ₹{movie.price}
                       </span>
                       <Link
                         to={`/movies/${movie.id}`}

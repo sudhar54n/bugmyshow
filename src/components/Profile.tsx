@@ -224,7 +224,7 @@ export default function Profile() {
                     <div className="flex justify-between">
                       <span className="text-gray-400">Total Spent:</span>
                       <span className="text-green-400">
-                        ${userBookings.reduce((sum, booking) => sum + booking.total_price, 0).toFixed(2)}
+                        ₹{userBookings.reduce((sum, booking) => sum + booking.total_price, 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -319,7 +319,7 @@ export default function Profile() {
                               <Download className="h-3 w-3" />
                               <span>Download</span>
                             </button>
-                          </div>
+                          <p className="text-lg font-bold">₹{booking.total_price}</p>
                         </div>
                       </div>
                     </div>

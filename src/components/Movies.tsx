@@ -137,7 +137,7 @@ export default function Movies() {
                   
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold text-green-400">
-                      ${movie.price}
+                      ₹{movie.price}
                     </span>
                     <Link
                       to={`/movies/${movie.id}`}

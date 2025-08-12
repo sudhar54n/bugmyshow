@@ -299,7 +299,7 @@ export default function MovieDetail() {
                 </p>
 
                 <div className="text-3xl font-bold text-green-400 mb-6">
-                  ${movie.price} per ticket
+                  ₹{movie.price} per ticket
                 </div>
               </div>
             </div>
@@ -493,7 +493,7 @@ export default function MovieDetail() {
                           return (
                             <div key={seat.id} className="flex justify-between">
                               <span>{seat.id} ({seat.type})</span>
-                              <span>${(movie.price * multiplier).toFixed(2)}</span>
+                              <span>₹{(movie.price * multiplier).toFixed(2)}</span>
                             </div>
                           );
                         })}
@@ -501,7 +501,7 @@ export default function MovieDetail() {
                     )}
                     <div className="flex justify-between items-center border-t border-green-400 pt-2">
                       <span className="text-green-300 font-semibold">Total:</span>
-                      <span className="text-green-400 font-bold text-xl">${totalPrice.toFixed(2)}</span>
+                      <span className="text-green-400 font-bold text-xl">₹{totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

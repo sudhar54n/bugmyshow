@@ -208,7 +208,7 @@ export default function MyBookings() {
                         <DollarSign className="h-4 w-4 text-green-400" />
                         <div>
                           <p className="text-green-400 font-semibold">Total</p>
-                          <p className="text-lg font-bold">${booking.total_price}</p>
+                          <p className="text-lg font-bold">₹{booking.total_price}</p>
                         </div>
                       </div>
                     </div>
@@ -307,7 +307,7 @@ export default function MyBookings() {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-400 mb-2">
-                  ${bookings.reduce((sum, booking) => sum + booking.total_price, 0).toFixed(2)}
+                  ₹{bookings.reduce((sum, booking) => sum + booking.total_price, 0).toFixed(2)}
                 </div>
                 <div className="text-gray-300">Total Spent</div>
               </div>

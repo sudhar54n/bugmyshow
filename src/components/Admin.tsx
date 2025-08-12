@@ -199,7 +199,7 @@ export default function Admin() {
                   <td className="px-4 py-3 text-green-400">{movie.title}</td>
                   <td className="px-4 py-3 text-gray-300">{movie.genre}</td>
                   <td className="px-4 py-3 text-gray-300">{movie.duration}m</td>
-                  <td className="px-4 py-3 text-gray-300">${movie.price}</td>
+                  <td className="px-4 py-3 text-gray-300">₹{movie.price}</td>
                   <td className="px-4 py-3 text-gray-300">{movie.availableSeats}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-2">

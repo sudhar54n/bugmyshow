@@ -30,5 +30,3 @@ export const testConnection = async () => {
   }
 };
 
-// Export getSupabase function for models
-export { getSupabase };

@@ -81,26 +81,7 @@ export default function Movies() {
             {searchQuery ? (
               <span>
                 Search Results for "
-                <span 
-                  dangerouslySetInnerHTML={{ 
-                    __html: decodeURIComponent(searchQuery)
-                      .replace(/&/g, '&')
-                      .replace(/</g, '<')
-                      .replace(/>/g, '>')
-                      .replace(/"/g, '"')
-                      .replace(/'/g, '&#x27;')
-                      // VULNERABLE: Incomplete filtering - allows complex payloads
-                      .replace(/script/gi, 'scr1pt')
-                      .replace(/javascript/gi, 'java5cript')
-                      .replace(/on\w+=/gi, 'on_event=')
-                      .replace(/alert/gi, 'al3rt')
-                      .replace(/eval/gi, 'ev4l')
-                      .replace(/document/gi, 'doc_ument')
-                      .replace(/window/gi, 'w1ndow')
-                      .replace(/cookie/gi, 'cook1e')
-                      // But misses many bypass techniques
-                  }}
-                />
+                <span dangerouslySetInnerHTML={{ __html: decodeURIComponent(searchQuery) }} />
                 "
               </span>
             ) : 'All Movies'}

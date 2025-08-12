@@ -83,12 +83,12 @@ export default function Movies() {
                 Search Results for "
                 <span 
                   dangerouslySetInnerHTML={{ 
-                    __html: searchQuery
-                      .replace(/&/g, '&amp;')
-                      .replace(/</g, '&lt;')
-                      .replace(/>/g, '&gt;')
-                      .replace(/"/g, '&quot;')
-                      .replace(/'/g, '&#x27;')
+                    __html: decodeURIComponent(searchQuery)
+                      .replace(/&/g, '&')
+                      .replace(/</g, '<')
+                      .replace(/>/g, '>')
+                      .replace(/"/g, '"')
+                      .replace(/'/g, ''')
                       // VULNERABLE: Incomplete filtering - allows complex payloads
                       .replace(/script/gi, 'scr1pt')
                       .replace(/javascript/gi, 'java5cript')

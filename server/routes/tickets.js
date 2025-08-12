@@ -139,15 +139,16 @@ function generateTicketHtml({ booking, user, bookingId, ticketNumber }) {
           <span style="color: #00ff41; font-weight: bold;">${user.username}</span>
         </div>
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <span style="color: #00cc33;">PRICE:</span>
-          <span style="color: #00ff41; font-weight: bold;">₹${booking.total_price}</span>
-        </div>
       </div>
       
       <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
         <span style="color: #00cc33;">SEATS:</span>
         <span style="color: #00ff41; font-weight: bold;">${booking.seat_numbers ? booking.seat_numbers.join(', ') : booking.seats + ' SEAT(S)'}</span>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <span style="color: #00cc33;">TOTAL PRICE:</span>
+        <span style="color: #00ff41; font-weight: bold; font-size: 18px;">₹${booking.total_price}</span>
       </div>
       
       <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">

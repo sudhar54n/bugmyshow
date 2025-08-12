@@ -67,6 +67,7 @@ app.use((err, req, res, next) => {
 // Start server
 const startServer = async () => {
   try {
+    console.log('🚀 Starting BugMyShow API Server...');
     console.log('🔍 Testing database connection...');
     try {
       const dbConnected = await testConnection();
@@ -81,21 +82,35 @@ const startServer = async () => {
       console.warn('⚠️ Continuing to start server without database setup...');
     }
     
-    app.listen(preferredPort, () => {
+    const server = app.listen(preferredPort, '0.0.0.0', () => {
       console.log(`🚀 BugMyShow API Server running on port ${preferredPort}`);
       console.log(`📡 API Base URL: http://localhost:${preferredPort}`);
       console.log(`🔍 Debug endpoint: http://localhost:${preferredPort}/api/debug`);
-    }).on('error', (err) => {
+    });
+    
+    server.on('error', (err) => {
       if (err.code === 'EADDRINUSE') {
         console.error(`❌ Port ${preferredPort} is already in use.`);
+        console.log('💡 Try killing any existing processes on this port or use a different port');
         process.exit(1);
       } else {
         console.error('❌ Failed to start server:', err.message);
         process.exit(1);
       }
     });
+    
+    // Handle graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('🛑 Received SIGTERM, shutting down gracefully');
+      server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+    
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
+    console.error('Stack trace:', error.stack);
     process.exit(1);
   }
 };

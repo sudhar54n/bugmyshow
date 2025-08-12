@@ -22,24 +22,32 @@ function App() {
           
           {/* Floating Code Snippets */}
           <div className="code-float">
-            function hackTheMovies() {<br/>
-            &nbsp;&nbsp;return "Access Granted";<br/>
-            }
+            <div dangerouslySetInnerHTML={{
+              __html: `function hackTheMovies() {<br/>
+              &nbsp;&nbsp;return "Access Granted";<br/>
+              }`
+            }} />
           </div>
           <div className="code-float">
-            SELECT * FROM movies<br/>
-            WHERE security = 'vulnerable';<br/>
-            -- Exploit found
+            <div dangerouslySetInnerHTML={{
+              __html: `SELECT * FROM movies<br/>
+              WHERE security = 'vulnerable';<br/>
+              -- Exploit found`
+            }} />
           </div>
           <div className="code-float">
-            &lt;script&gt;<br/>
-            &nbsp;&nbsp;alert('XSS');<br/>
-            &lt;/script&gt;
+            <div dangerouslySetInnerHTML={{
+              __html: `&lt;script&gt;<br/>
+              &nbsp;&nbsp;alert('XSS');<br/>
+              &lt;/script&gt;`
+            }} />
           </div>
           <div className="code-float">
-            curl -X POST /api/tickets<br/>
-            -H "Authorization: Bearer fake"<br/>
-            --data "price=0.01"
+            <div dangerouslySetInnerHTML={{
+              __html: `curl -X POST /api/tickets<br/>
+              -H "Authorization: Bearer fake"<br/>
+              --data "price=0.01"`
+            }} />
           </div>
           
           <div className="matrix-bg">

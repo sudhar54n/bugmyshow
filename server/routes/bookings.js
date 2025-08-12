@@ -23,7 +23,7 @@ router.post('/', auth, async (req, res) => {
       movie_title: movie.title,
       seats,
       seat_numbers: req.body.seatNumbers || [],
-      total_price: totalPrice, // Vulnerable: Direct use of client-provided price
+      total_price: totalPrice || 0, // Vulnerable: Direct use of client-provided price
       show_time: showTime
     });
     

@@ -19,8 +19,6 @@ export default function Profile() {
   const [uploadMessage, setUploadMessage] = useState('');
   const [downloadingTicket, setDownloadingTicket] = useState<string | null>(null);
   const [showDownloadOptions, setShowDownloadOptions] = useState<string | null>(null);
-  const [downloadingTicket, setDownloadingTicket] = useState<string | null>(null);
-  const [showDownloadOptions, setShowDownloadOptions] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -78,87 +76,6 @@ export default function Profile() {
     } catch (error) {
       console.error('Error uploading file:', error);
       setUploadMessage('Upload failed. Please try again.');
-    }
-  };
-
-  const downloadTicket = async (bookingId: string, format: 'pdf' | 'jpg') => {
-    setDownloadingTicket(bookingId);
-    setShowDownloadOptions(null);
-    try {
-      const response = await fetch(`/api/tickets/generate/${bookingId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Create a temporary div to render the ticket HTML
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = data.ticketHtml;
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-9999px';
-        document.body.appendChild(tempDiv);
-
-        // Import jsPDF dynamically
-        const { default: jsPDF } = await import('jspdf');
-        const html2canvas = (await import('html2canvas')).default;
-
-        // Convert HTML to canvas
-        const canvas = await html2canvas(tempDiv.firstElementChild as HTMLElement, {
-          backgroundColor: '#000000',
-          scale: 2
-        });
-
-        if (format === 'pdf') {
-          // Create PDF
-          const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
-          });
-
-          const imgData = canvas.toDataURL('image/png');
-          const imgWidth = 210; // A4 width in mm
-          const pageHeight = 295; // A4 height in mm
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let heightLeft = imgHeight;
-
-          let position = 0;
-
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-
-          while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-          }
-
-          // Download the PDF
-          pdf.save(`ticket-${data.booking.movie_title.replace(/[^a-zA-Z0-9]/g, '-')}-${bookingId}.pdf`);
-        } else {
-          // Download as JPG
-          const imgData = canvas.toDataURL('image/jpeg', 0.9);
-          const link = document.createElement('a');
-          link.download = `ticket-${data.booking.movie_title.replace(/[^a-zA-Z0-9]/g, '-')}-${bookingId}.jpg`;
-          link.href = imgData;
-          link.click();
-        }
-
-
-        // Clean up
-        document.body.removeChild(tempDiv);
-      } else {
-        alert('Failed to generate ticket');
-      }
-    } catch (error) {
-      console.error('Error downloading ticket:', error);
-      alert('Failed to download ticket');
-    } finally {
-      setDownloadingTicket(null);
     }
   };
 
@@ -398,40 +315,11 @@ export default function Profile() {
                             <button 
                               onClick={() => setShowDownloadOptions(booking.id)}
                               className="flex items-center space-x-1 bg-green-600 hover:bg-green-500 text-black px-3 py-1 rounded text-xs font-semibold transition-colors"
-                        <div className="relative">
-                          {showDownloadOptions === booking.id ? (
-                            <div className="absolute right-0 bottom-full mb-2 bg-gray-800 border border-green-400 rounded p-2 space-y-1 min-w-32">
-                              <button 
-                                onClick={() => downloadTicket(booking.id, 'pdf')}
-                                disabled={downloadingTicket === booking.id}
-                                className="w-full flex items-center space-x-1 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 text-white px-2 py-1 rounded text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                <Download className="h-3 w-3" />
-                                <span>PDF</span>
-                              </button>
-                              <button 
-                                onClick={() => downloadTicket(booking.id, 'jpg')}
-                                disabled={downloadingTicket === booking.id}
-                                className="w-full flex items-center space-x-1 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 text-white px-2 py-1 rounded text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                <Download className="h-3 w-3" />
-                                <span>JPG</span>
-                              </button>
-                              <button 
-                                onClick={() => setShowDownloadOptions(null)}
-                                className="w-full bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs transition-colors"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          ) : null}
-                          <button 
-                            onClick={() => setShowDownloadOptions(booking.id)}
-                            className="flex items-center space-x-1 bg-green-600 hover:bg-green-500 text-black px-3 py-1 rounded text-xs font-semibold transition-colors"
-                          >
-                            <Download className="h-3 w-3" />
-                            <span>Download</span>
-                          </button>
+                            >
+                              <Download className="h-3 w-3" />
+                              <span>Download</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

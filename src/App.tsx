@@ -15,7 +15,33 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-black text-green-400 font-mono">
+        <div className="min-h-screen bg-black text-green-400 font-mono relative">
+          {/* Hacker Background Elements */}
+          <div className="hacker-grid"></div>
+          <div className="binary-rain"></div>
+          
+          {/* Floating Code Snippets */}
+          <div className="code-float">
+            function hackTheMovies() {<br/>
+            &nbsp;&nbsp;return "Access Granted";<br/>
+            }
+          </div>
+          <div className="code-float">
+            SELECT * FROM movies<br/>
+            WHERE security = 'vulnerable';<br/>
+            -- Exploit found
+          </div>
+          <div className="code-float">
+            &lt;script&gt;<br/>
+            &nbsp;&nbsp;alert('XSS');<br/>
+            &lt;/script&gt;
+          </div>
+          <div className="code-float">
+            curl -X POST /api/tickets<br/>
+            -H "Authorization: Bearer fake"<br/>
+            --data "price=0.01"
+          </div>
+          
           <div className="matrix-bg">
             <Header />
             <Routes>

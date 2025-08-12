@@ -30,22 +30,25 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-md w-full space-y-8 terminal-window scan-lines">
+        <div className="terminal-header">
+          root@bugmyshow:/auth$ ./login --interactive
+        </div>
         <div className="text-center">
-          <Terminal className="mx-auto h-12 w-12 text-green-400" />
-          <h2 className="mt-6 text-3xl font-bold text-green-400">
+          <Terminal className="mx-auto h-12 w-12 text-green-400 animate-pulse" />
+          <h2 className="mt-6 text-3xl font-bold text-green-400 hacker-glitch font-mono" data-text="Access Terminal">
             Access Terminal
           </h2>
-          <p className="mt-2 text-sm text-gray-400">
-            Enter your credentials to continue
+          <p className="mt-2 text-sm text-green-600 font-mono">
+            [AUTHENTICATION REQUIRED] Enter credentials to proceed...
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6 p-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-green-400 mb-2">
-                Username
+              <label htmlFor="username" className="block text-sm font-medium text-green-400 mb-2 font-mono">
+                root@username:~$
               </label>
               <input
                 id="username"
@@ -54,14 +57,14 @@ export default function Login() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-900 border border-green-400 rounded-md text-green-400 placeholder-green-600 focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300"
-                placeholder="Enter username"
+                className="w-full px-3 py-2 bg-black border border-green-400 rounded text-green-400 placeholder-green-600 focus:outline-none focus:border-green-300 focus:shadow-[0_0_10px_rgba(0,255,65,0.3)] font-mono"
+                placeholder="admin"
               />
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-green-400 mb-2">
-                Password
+              <label htmlFor="password" className="block text-sm font-medium text-green-400 mb-2 font-mono">
+                root@password:~$
               </label>
               <div className="relative">
                 <input
@@ -71,8 +74,8 @@ export default function Login() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-900 border border-green-400 rounded-md text-green-400 placeholder-green-600 focus:outline-none focus:border-green-300 focus:ring-1 focus:ring-green-300 pr-10"
-                  placeholder="Enter password"
+                  className="w-full px-3 py-2 bg-black border border-green-400 rounded text-green-400 placeholder-green-600 focus:outline-none focus:border-green-300 focus:shadow-[0_0_10px_rgba(0,255,65,0.3)] font-mono pr-10"
+                  placeholder="admin123"
                 />
                 <button
                   type="button"
@@ -86,8 +89,8 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="text-red-400 text-sm text-center bg-red-900/20 border border-red-400 rounded p-2">
-              {error}
+            <div className="text-red-400 text-sm text-center bg-red-900/20 border border-red-400 rounded p-2 font-mono">
+              [ERROR] {error}
             </div>
           )}
 
@@ -95,23 +98,23 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-black bg-green-600 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex justify-center py-2 px-4 bg-green-400 text-black hover:bg-green-300 rounded font-mono text-sm font-bold transition-all hover:shadow-[0_0_15px_rgba(0,255,65,0.7)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Authenticating...' : 'Login'}
+              {loading ? '[AUTHENTICATING...]' : './execute_login'}
             </button>
           </div>
 
           <div className="text-center">
-            <span className="text-gray-400">Don't have an account? </span>
-            <Link to="/register" className="text-green-400 hover:text-green-300 font-medium">
-              Register here
+            <span className="text-gray-400 font-mono">Don't have access? </span>
+            <Link to="/register" className="text-green-400 hover:text-green-300 font-medium font-mono hover:shadow-[0_0_5px_rgba(0,255,65,0.5)]">
+              ./create_account
             </Link>
           </div>
 
-          <div className="text-center text-xs text-gray-500 mt-4">
-            <p>Demo credentials:</p>
-            <p>Admin: admin / admin123</p>
-            <p>User: test / password123</p>
+          <div className="text-center text-xs text-green-600 mt-4 font-mono bg-black border border-green-400 rounded p-3">
+            <p>[DEBUG MODE] Demo credentials:</p>
+            <p>root@admin:~$ admin / admin123</p>
+            <p>user@test:~$ test / password123</p>
           </div>
         </form>
       </div>

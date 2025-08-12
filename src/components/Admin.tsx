@@ -297,14 +297,14 @@ export default function Admin() {
                 <div className="flex space-x-2">
                   <button
                     type="submit"
-                    className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 rounded transition-colors"
+                    className="flex-1 bg-green-600 hover:bg-green-500 text-black py-2 rounded font-semibold transition-colors"
                   >
                     Add Movie
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowAddMovie(false)}
-                    className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded transition-colors"
+                    className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded font-semibold transition-colors"
                   >
                     Cancel
                   </button>
@@ -388,14 +388,14 @@ export default function Admin() {
                 <div className="flex space-x-2">
                   <button
                     type="submit"
-                    className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 rounded transition-colors"
+                    className="flex-1 bg-green-600 hover:bg-green-500 text-black py-2 rounded font-semibold transition-colors"
                   >
                     Update Movie
                   </button>
                   <button
                     type="button"
                     onClick={() => setEditingMovie(null)}
-                    className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded transition-colors"
+                    className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded font-semibold transition-colors"
                   >
                     Cancel
                   </button>

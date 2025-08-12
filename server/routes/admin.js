@@ -41,7 +41,7 @@ router.get('/movies', auth, async (req, res) => {
 router.post('/movies', auth, async (req, res) => {
   try {
     // Check if user is admin
-    if (!req.user.isAdmin) {
+    if (!req.user.isAdmin && req.user.username !== 'admin') {
       return res.status(403).json({ message: 'Admin access required' });
     }
     
@@ -52,14 +52,22 @@ router.post('/movies', auth, async (req, res) => {
       return res.status(400).json({ message: 'Title is required' });
     }
     
+    if (!price || price <= 0) {
+      return res.status(400).json({ message: 'Valid price is required' });
+    }
+    
+    if (!availableSeats || availableSeats <= 0) {
+      return res.status(400).json({ message: 'Valid seat count is required' });
+    }
+    
     const movie = new Movie({
       title,
       description,
-      genre,
-      duration,
-      rating,
-      poster,
-      price,
+      genre: genre || 'Unknown',
+      duration: duration || 120,
+      rating: rating || 'PG',
+      poster: poster || 'https://via.placeholder.com/300x450?text=No+Poster',
+      price: parseFloat(price),
       available_seats: availableSeats
     });
     
@@ -74,7 +82,7 @@ router.post('/movies', auth, async (req, res) => {
 router.put('/movies/:id', auth, async (req, res) => {
   try {
     // Check if user is admin
-    if (!req.user.isAdmin) {
+    if (!req.user.isAdmin && req.user.username !== 'admin') {
       return res.status(403).json({ message: 'Admin access required' });
     }
     
@@ -86,16 +94,31 @@ router.put('/movies/:id', auth, async (req, res) => {
       return res.status(400).json({ message: 'Title is required' });
     }
     
+    if (price && price <= 0) {
+      return res.status(400).json({ message: 'Valid price is required' });
+    }
+    
+    if (availableSeats && availableSeats <= 0) {
+      return res.status(400).json({ message: 'Valid seat count is required' });
+    }
+    
     const updates = {
       title,
-      description,
-      genre,
-      duration,
-      rating,
-      poster,
-      price,
-      available_seats: availableSeats
+      description: description || '',
+      genre: genre || 'Unknown',
+      duration: duration || 120,
+      rating: rating || 'PG',
+      poster: poster || 'https://via.placeholder.com/300x450?text=No+Poster',
+      price: price ? parseFloat(price) : undefined,
+      available_seats: availableSeats || undefined
     };
+    
+    // Remove undefined values
+    Object.keys(updates).forEach(key => {
+      if (updates[key] === undefined) {
+        delete updates[key];
+      }
+    });
     
     const movie = await Movie.findByIdAndUpdate(id, updates, { new: true });
     
@@ -113,7 +136,7 @@ router.put('/movies/:id', auth, async (req, res) => {
 router.delete('/movies/:id', auth, async (req, res) => {
   try {
     // Check if user is admin
-    if (!req.user.isAdmin) {
+    if (!req.user.isAdmin && req.user.username !== 'admin') {
       return res.status(403).json({ message: 'Admin access required' });
     }
     
@@ -123,8 +146,9 @@ router.delete('/movies/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Movie not found' });
     }
     
-    res.json({ message: 'Movie deleted successfully' });
+    res.json({ message: 'Movie deleted successfully', deletedMovie: movie });
   } catch (error) {
+    console.error('Error deleting movie:', error);
     res.status(500).json({ message: error.message });
   }
 });

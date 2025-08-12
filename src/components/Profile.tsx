@@ -19,10 +19,27 @@ export default function Profile() {
   const [uploadMessage, setUploadMessage] = useState('');
   const [downloadingTicket, setDownloadingTicket] = useState<string | null>(null);
   const [showDownloadOptions, setShowDownloadOptions] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    username: user?.username || '',
+    email: user?.email || '',
+    user_id: user?.user_id || ''
+  });
+  const [updateMessage, setUpdateMessage] = useState('');
 
   useEffect(() => {
     if (user) {
       fetchUserBookings();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      setEditForm({
+        username: user.username || '',
+        email: user.email || '',
+        user_id: user.user_id?.toString() || ''
+      });
     }
   }, [user]);
 
@@ -76,6 +93,36 @@ export default function Profile() {
     } catch (error) {
       console.error('Error uploading file:', error);
       setUploadMessage('Upload failed. Please try again.');
+    }
+  };
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`/api/user/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          username: editForm.username,
+          email: editForm.email,
+          user_id: editForm.user_id
+        })
+      });
+
+      if (response.ok) {
+        setUpdateMessage('Profile updated successfully!');
+        setIsEditing(false);
+        // Note: In a real app, you'd want to refresh the user context here
+        setTimeout(() => setUpdateMessage(''), 3000);
+      } else {
+        setUpdateMessage('Failed to update profile. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setUpdateMessage('Failed to update profile. Please try again.');
     }
   };
 
@@ -177,8 +224,61 @@ export default function Profile() {
                 <div className="w-24 h-24 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <User className="h-12 w-12 text-black" />
                 </div>
-                <h2 className="text-2xl font-bold text-green-400">{user.username}</h2>
-                <p className="text-gray-400">{user.email}</p>
+                {!isEditing ? (
+                  <>
+                    <h2 className="text-2xl font-bold text-green-400">{user.username}</h2>
+                    <p className="text-gray-400">{user.email}</p>
+                    <p className="text-gray-500 text-sm">User ID: {user.user_id}</p>
+                  </>
+                ) : (
+                  <form onSubmit={handleProfileUpdate} className="space-y-3">
+                    <div>
+                      <input
+                        type="text"
+                        value={editForm.username}
+                        onChange={(e) => setEditForm({...editForm, username: e.target.value})}
+                        className="w-full px-3 py-2 bg-black border border-green-400 rounded text-green-400 text-center font-bold text-xl"
+                        placeholder="Username"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="email"
+                        value={editForm.email}
+                        onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                        className="w-full px-3 py-2 bg-black border border-green-400 rounded text-green-400 text-center"
+                        placeholder="Email"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        value={editForm.user_id}
+                        onChange={(e) => setEditForm({...editForm, user_id: e.target.value})}
+                        className="w-full px-3 py-2 bg-black border border-green-400 rounded text-green-400 text-center text-sm"
+                        placeholder="User ID"
+                        required
+                      />
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        type="submit"
+                        className="flex-1 bg-green-600 hover:bg-green-500 text-black px-3 py-1 rounded text-sm font-semibold transition-colors"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditing(false)}
+                        className="flex-1 bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                )}
                 {user.isAdmin && (
                   <span className="inline-block bg-red-600 text-white px-2 py-1 rounded text-sm font-semibold mt-2">
                     Admin
@@ -187,6 +287,24 @@ export default function Profile() {
               </div>
 
               <div className="space-y-4">
+                {!isEditing && (
+                  <div>
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="w-full bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded font-semibold transition-colors flex items-center justify-center space-x-2"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>Edit Profile</span>
+                    </button>
+                  </div>
+                )}
+
+                {updateMessage && (
+                  <div className={`text-sm text-center p-2 rounded ${updateMessage.includes('success') ? 'text-green-400 bg-green-900/20 border border-green-400' : 'text-red-400 bg-red-900/20 border border-red-400'}`}>
+                    {updateMessage}
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-green-400 text-sm font-medium mb-2">
                     Upload Profile Picture

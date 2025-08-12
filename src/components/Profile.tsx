@@ -319,6 +319,9 @@ export default function Profile() {
                               <Download className="h-3 w-3" />
                               <span>Download</span>
                             </button>
+                          </div>
+                        </div>
+                        <div className="mt-2">
                           <p className="text-lg font-bold">₹{booking.total_price}</p>
                         </div>
                       </div>

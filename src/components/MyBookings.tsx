@@ -127,87 +127,6 @@ export default function MyBookings() {
     }
   };
 
-  const downloadTicket = async (bookingId: string, format: 'pdf' | 'jpg') => {
-    setDownloadingTicket(bookingId);
-    setShowDownloadOptions(null);
-    try {
-      const response = await fetch(`/api/tickets/generate/${bookingId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Create a temporary div to render the ticket HTML
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = data.ticketHtml;
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-9999px';
-        document.body.appendChild(tempDiv);
-
-        // Import jsPDF dynamically
-        const { default: jsPDF } = await import('jspdf');
-        const html2canvas = (await import('html2canvas')).default;
-
-        // Convert HTML to canvas
-        const canvas = await html2canvas(tempDiv.firstElementChild as HTMLElement, {
-          backgroundColor: '#000000',
-          scale: 2
-        });
-
-        if (format === 'pdf') {
-          // Create PDF
-          const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
-          });
-
-          const imgData = canvas.toDataURL('image/png');
-          const imgWidth = 210; // A4 width in mm
-          const pageHeight = 295; // A4 height in mm
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let heightLeft = imgHeight;
-
-          let position = 0;
-
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-
-          while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-          }
-
-          // Download the PDF
-          pdf.save(`ticket-${data.booking.movie_title.replace(/[^a-zA-Z0-9]/g, '-')}-${bookingId}.pdf`);
-        } else {
-          // Download as JPG
-          const imgData = canvas.toDataURL('image/jpeg', 0.9);
-          const link = document.createElement('a');
-          link.download = `ticket-${data.booking.movie_title.replace(/[^a-zA-Z0-9]/g, '-')}-${bookingId}.jpg`;
-          link.href = imgData;
-          link.click();
-        }
-
-
-        // Clean up
-        document.body.removeChild(tempDiv);
-      } else {
-        alert('Failed to generate ticket');
-      }
-    } catch (error) {
-      console.error('Error downloading ticket:', error);
-      alert('Failed to download ticket');
-    } finally {
-      setDownloadingTicket(null);
-    }
-  };
-
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -306,41 +225,6 @@ export default function MyBookings() {
                           <div className="space-y-2">
                             <button 
                               onClick={() => downloadTicket(booking.id, 'pdf')}
-                              disabled={downloadingTicket === booking.id}
-                              className="w-full flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 text-white px-4 py-2 rounded font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <Download className="h-4 w-4" />
-                              <span>
-                                {downloadingTicket === booking.id ? 'Generating PDF...' : 'Download as PDF'}
-                              </span>
-                            </button>
-                            <button 
-                              onClick={() => downloadTicket(booking.id, 'jpg')}
-                              disabled={downloadingTicket === booking.id}
-                              className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 text-white px-4 py-2 rounded font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <Download className="h-4 w-4" />
-                              <span>
-                                {downloadingTicket === booking.id ? 'Generating JPG...' : 'Download as JPG'}
-                              </span>
-                            </button>
-                            <button 
-                              onClick={() => setShowDownloadOptions(null)}
-                              className="w-full bg-gray-600 hover:bg-gray-500 text-white px-4 py-1 rounded text-sm transition-colors"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <button 
-                            onClick={() => setShowDownloadOptions(booking.id)}
-                            className="w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-500 text-black px-4 py-2 rounded font-semibold transition-colors"
-                          >
-                            <Download className="h-4 w-4" />
-                            <span>Download Ticket</span>
-                          </button>
-                        )}
-                      </div>
                               disabled={downloadingTicket === booking.id}
                               className="w-full flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 text-white px-4 py-2 rounded font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >

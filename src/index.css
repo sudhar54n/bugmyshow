@@ -549,6 +549,11 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(var(--accent-gold), var(--accent-pink));
 }
 
+/* Fade in animation for mobile menu */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
 /* Utility Classes */
 .text-gradient {
   background: linear-gradient(135deg, var(--accent-pink), var(--accent-gold));

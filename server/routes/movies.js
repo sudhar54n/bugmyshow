@@ -114,6 +114,23 @@ router.delete('/:id', async (req, res) => {
 // Adds a review safely even if reviews was null/string/incorrect type.
 router.post('/:id/review', async (req, res) => {
   try {
+    // Validate input data
+    const { user, comment, rating } = req.body;
+    
+    // Check comment length (max 1000 characters)
+    if (comment && comment.length > 1000) {
+      return res.status(400).json({ 
+        error: 'Review comment cannot exceed 1000 characters' 
+      });
+    }
+    
+    // Validate rating range
+    if (rating && (rating < 1 || rating > 5)) {
+      return res.status(400).json({ 
+        error: 'Rating must be between 1 and 5' 
+      });
+    }
+
     const movie = await Movie.findById(req.params.id);
     if (!movie) return res.status(404).json({ error: 'Movie not found' });
 
@@ -121,9 +138,9 @@ router.post('/:id/review', async (req, res) => {
     movie.reviews = normalizeReviews(movie.reviews);
 
     const review = buildReview({
-      user: req.body.user || 'Anonymous',
-      comment: req.body.comment || '',
-      rating: req.body.rating || 5
+      user: user || 'Anonymous',
+      comment: comment || '',
+      rating: rating || 5
     });
     movie.reviews.push(review);
 

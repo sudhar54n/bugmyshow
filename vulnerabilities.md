@@ -110,21 +110,7 @@ curl -X POST http://localhost:5001/api/user/upload \
 
 ## 3. Cross-Site Scripting (XSS)
 
-### 3.1 Reflected XSS in Search
-**Location**: `src/components/Movies.tsx` - Line 65-69  
-**Severity**: High  
-**Description**: Search query displayed without sanitization.
-
-**Exploitation**:
-```
-# URL payload
-https://localhost:5173/movies?search=<script>alert('XSS')</script>
-
-# Alternative payload
-https://localhost:5173/movies?search=<img src=x onerror=alert('XSS')>
-```
-
-### 3.2 Stored XSS in Reviews
+### 3.1 Stored XSS in Reviews
 **Location**: `src/components/MovieDetail.tsx` - Line 320  
 **Severity**: High  
 **Description**: Review comments rendered with dangerouslySetInnerHTML.
@@ -369,7 +355,7 @@ fetch('http://localhost:5001/api/debug', {
 1. Access debug endpoint for system info
 2. Use IDOR to enumerate all bookings
 3. Extract user emails and booking data
-4. Use XSS to steal session tokens
+4. Use stored XSS in reviews to steal session tokens
 
 ### Scenario 3: Remote Code Execution
 1. Register account with SSTI payload in username

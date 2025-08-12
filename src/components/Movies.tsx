@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Star, Clock, Users, Filter, Grid, List } from 'lucide-react';
+import { Star, Clock, Users, Filter, Grid, List, Film } from 'lucide-react';
 
 interface Movie {
   id: string;

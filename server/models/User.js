@@ -1,4 +1,4 @@
-import { getSupabase } from '../config/database.js';
+import { supabase } from '../config/database.js';
 
 class User {
   constructor(data) {
@@ -14,7 +14,6 @@ class User {
 
   static async findOne(query) {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available - using fallback');
         return null;
@@ -65,7 +64,6 @@ class User {
 
   static async findById(id) {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available');
         return null;
@@ -96,7 +94,6 @@ class User {
 
   async save() {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available');
         throw new Error('Database not available');

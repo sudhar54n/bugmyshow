@@ -1,4 +1,4 @@
-import { getSupabase } from '../config/database.js';
+import { supabase } from '../config/database.js';
 
 class Booking {
   constructor(data) {
@@ -16,7 +16,6 @@ class Booking {
 
   static async find(query = {}) {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available - returning empty array');
         return [];
@@ -45,7 +44,6 @@ class Booking {
 
   static async findById(id) {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available');
         return null;
@@ -71,7 +69,6 @@ class Booking {
 
   async save() {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available');
         throw new Error('Database not available');

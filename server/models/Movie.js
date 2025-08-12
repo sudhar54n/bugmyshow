@@ -1,4 +1,4 @@
-import { getSupabase } from '../config/database.js';
+import { supabase } from '../config/database.js';
 
 class Movie {
   constructor(data) {
@@ -32,7 +32,6 @@ class Movie {
 
   static async find(query = {}) {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available - returning empty array');
         return [];
@@ -66,7 +65,6 @@ class Movie {
 
   static async findById(id) {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available');
         return null;
@@ -92,7 +90,6 @@ class Movie {
 
   static async findByIdAndUpdate(id, updates, options = {}) {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available');
         return null;
@@ -116,7 +113,6 @@ class Movie {
 
   static async findByIdAndDelete(id) {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available');
         return null;
@@ -140,7 +136,6 @@ class Movie {
 
   async save() {
     try {
-      const supabase = getSupabase();
       if (!supabase) {
         console.log('Database not available');
         throw new Error('Database not available');

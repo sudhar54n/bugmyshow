@@ -29,3 +29,6 @@ export const testConnection = async () => {
     return false;
   }
 };
+
+// Export getSupabase function for models
+export { getSupabase };

@@ -120,8 +120,7 @@ router.post('/register', async (req, res) => {
     }
     
     // Generate unique user ID starting from 101
-    const { getSupabase } = await import('../config/database.js');
-    const supabase = getSupabase();
+    const { supabase } = await import('../config/database.js');
     let uniqueUserId = 101;
     
     if (supabase) {

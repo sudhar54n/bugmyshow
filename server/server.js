@@ -1,28 +1,11 @@
-import { config } from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// Required to simulate __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// 🔧 Load .env from the same directory where server.js is located
-const envPath = path.resolve(__dirname, '.env');
-console.log('📂 Loading .env from:', envPath);
-config({ path: envPath });
-
-// Initialize Supabase after loading environment variables
-import { testConnection } from './config/database.js';
-
-const preferredPort = process.env.PORT || 5001;
-
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
-import { createServer } from 'http';
+import { supabase, testConnection } from './config/database.js';
 
+const preferredPort = 5001; // fixed port for local dev
 
 const app = express();
 
@@ -66,7 +49,6 @@ app.get('/', (req, res) => {
 // Debug Endpoint Exposure - Vulnerability #7
 app.get('/api/debug', (req, res) => {
   res.json({
-    environment: process.env,
     memory: process.memoryUsage(),
     platform: process.platform,
     version: process.version,
@@ -82,33 +64,27 @@ app.use((err, req, res, next) => {
   res.status(500).send(err.stack);
 });
 
-// Start server on fixed port
+// Start server
 const startServer = async () => {
   try {
-    // Test database connection first
     console.log('🔍 Testing database connection...');
     const dbConnected = await testConnection();
     
     if (!dbConnected) {
-      console.error('❌ Failed to connect to database. Please check your Supabase configuration.');
-      console.log('📝 Make sure to set up your Supabase project and update the environment variables.');
+      console.error('❌ Failed to connect to database.');
       process.exit(1);
     }
     
-    // Create admin user if it doesn't exist
     await createAdminUser();
-    
-    // Add sample movies if they don't exist
     await createSampleMovies();
     
     app.listen(preferredPort, () => {
       console.log(`🚀 BugMyShow API Server running on port ${preferredPort}`);
       console.log(`📡 API Base URL: http://localhost:${preferredPort}`);
       console.log(`🔍 Debug endpoint: http://localhost:${preferredPort}/api/debug`);
-      console.log(`💾 Database: Supabase (Persistent Storage)`);
     }).on('error', (err) => {
       if (err.code === 'EADDRINUSE') {
-        console.error(`❌ Port ${preferredPort} is already in use. Please free up the port or set a different PORT environment variable.`);
+        console.error(`❌ Port ${preferredPort} is already in use.`);
         process.exit(1);
       } else {
         console.error('❌ Failed to start server:', err.message);
@@ -121,18 +97,14 @@ const startServer = async () => {
   }
 };
 
-// Create admin user in database if it doesn't exist
+// Create admin user if missing
 const createAdminUser = async () => {
   try {
-    const { getSupabase } = await import('./config/database.js');
-    const supabase = getSupabase();
-    
     if (!supabase) {
-      console.log('⚠️  Skipping admin user creation: Supabase client not available');
+      console.log('⚠️ Skipping admin user creation: Supabase client not available');
       return;
     }
 
-    // Check if admin user exists
     const { data: existingAdmin } = await supabase
       .from('users')
       .select('*')
@@ -140,10 +112,8 @@ const createAdminUser = async () => {
       .single();
 
     if (!existingAdmin) {
-      // Hash the admin password
       const hashedPassword = await bcrypt.hash('admin123', 10);
-      
-      // Create admin user
+
       const { error } = await supabase
         .from('users')
         .insert([
@@ -168,18 +138,14 @@ const createAdminUser = async () => {
   }
 };
 
-// Create sample movies in database if they don't exist
+// Create sample movies if missing
 const createSampleMovies = async () => {
   try {
-    const { getSupabase } = await import('./config/database.js');
-    const supabase = getSupabase();
-    
     if (!supabase) {
-      console.log('⚠️  Skipping sample movie creation: Supabase client not available');
+      console.log('⚠️ Skipping sample movie creation: Supabase client not available');
       return;
     }
 
-    // Check if movies already exist
     const { data: existingMovies } = await supabase
       .from('movies')
       .select('*')
@@ -207,9 +173,7 @@ const createSampleMovies = async () => {
         }
       ];
 
-      const { error } = await supabase
-        .from('movies')
-        .insert(sampleMovies);
+      const { error } = await supabase.from('movies').insert(sampleMovies);
 
       if (error) {
         console.error('❌ Failed to create sample movies:', error.message);
@@ -223,4 +187,5 @@ const createSampleMovies = async () => {
     console.error('❌ Error creating sample movies:', error.message);
   }
 };
+
 startServer();

@@ -263,9 +263,10 @@ export default function MovieDetail() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
+          user: user.username,
           comment: reviewComment,
           rating: reviewRating
         })
@@ -276,9 +277,14 @@ export default function MovieDetail() {
         setReviewComment('');
         setReviewRating(5);
         fetchMovie(); // Refresh movie data
+      } else {
+        const errorData = await response.json();
+        console.error('Review submission failed:', errorData);
+        alert('Failed to add review. Please try again.');
       }
     } catch (error) {
       console.error('Error adding review:', error);
+      alert('Failed to add review. Please try again.');
     }
   };
 

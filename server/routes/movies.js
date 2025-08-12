@@ -112,7 +112,7 @@ router.delete('/:id', async (req, res) => {
 
 // POST /api/movies/:id/reviews
 // Adds a review safely even if reviews was null/string/incorrect type.
-router.post('/:id/reviews', async (req, res) => {
+router.post('/:id/review', async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.id);
     if (!movie) return res.status(404).json({ error: 'Movie not found' });
@@ -120,7 +120,11 @@ router.post('/:id/reviews', async (req, res) => {
     // Normalize reviews BEFORE push (this fixes your crash)
     movie.reviews = normalizeReviews(movie.reviews);
 
-    const review = buildReview(req.body || {});
+    const review = buildReview({
+      user: req.body.user || 'Anonymous',
+      comment: req.body.comment || '',
+      rating: req.body.rating || 5
+    });
     movie.reviews.push(review);
 
     await movie.save();

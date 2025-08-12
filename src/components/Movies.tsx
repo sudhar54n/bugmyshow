@@ -77,14 +77,15 @@ export default function Movies() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-12 gap-6">
           <h1 className="text-5xl font-montserrat font-black text-gradient">
-            {/* VULNERABLE: Reflected XSS - searchQuery displayed without sanitization */}
             {searchQuery ? (
-              <span>
-                Search Results for "
-                <span dangerouslySetInnerHTML={{ __html: decodeURIComponent(searchQuery) }} />
-                "
-              </span>
-            ) : 'All Movies'}
+              <span 
+                dangerouslySetInnerHTML={{ 
+                  __html: `Search Results for "${decodeURIComponent(searchQuery)}"` 
+                }} 
+              />
+            ) : (
+              'All Movies'
+            )}
           </h1>
           
           <div className="flex items-center space-x-6">

